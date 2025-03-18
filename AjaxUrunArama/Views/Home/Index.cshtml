@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "Ürün Arama";
+}
+
+<h2>Ürün Arama</h2>
+<input type="text" id="searchInput" placeholder="Ürün ara..." autocomplete="off" />
+<ul id="suggestionList"></ul>
+
+<table id="productTable" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Fiyat</th>
+            <th>Stok</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function () {
+        $('#searchInput').on('keyup', function () {
+            var term = $(this).val();
+
+            if (term.length > 0) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Home")',
+                    type: 'GET',
+                    data: { term: term },
+                    success: function (data) {
+                        var $tbody = $('#productTable tbody');
+                        $tbody.empty();
+
+                        $.each(data, function (index, item) {
+                            var row = '<tr>' +
+                                          '<td>' + item.Name + '</td>' +
+                                          '<td>' + item.Price + '</td>' +
+                                          '<td>' + item.Stock + '</td>' +
+                                      '</tr>';
+                            $tbody.append(row);
+                        });
+                    },
+                    error: function () {
+                        console.log("Arama sırasında bir hata oluştu!");
+                    }
+                });
+            } else {
+                $('#productTable tbody').empty();
+            }
+        });
+    });
+    </script>
+}
